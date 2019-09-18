@@ -11,7 +11,6 @@ services:
       MYSQL_USER: $DB_USER
       MYSQL_PASSWORD: $DB_PASSWORD
 #    volumes:
-#      - ./mariadb-init:/docker-entrypoint-initdb.d # Place init .sql file(s) here.
 #      - /path/to/mariadb/data/on/host:/var/lib/mysql # Use bind mount
 
   php:
@@ -28,23 +27,8 @@ services:
       PHP_FPM_USER: wodby
       PHP_FPM_GROUP: wodby
       COLUMNS: 80 # Set 80 columns for docker exec -it.
-## Read instructions at https://wodby.com/stacks/drupal/docs/local/xdebug/
-#      PHP_XDEBUG: 1
-#      PHP_XDEBUG_DEFAULT_ENABLE: 1
-#      PHP_XDEBUG_REMOTE_CONNECT_BACK: 0
-#      PHP_IDE_CONFIG: serverName=my-ide
-#      PHP_XDEBUG_REMOTE_HOST: host.docker.internal # Docker 18.03+ Mac/Win
-#      PHP_XDEBUG_REMOTE_HOST: 172.17.0.1 # Linux
-#      PHP_XDEBUG_REMOTE_HOST: 10.254.254.254 # macOS, Docker < 18.03
-#      PHP_XDEBUG_REMOTE_HOST: 10.0.75.1 # Windows, Docker < 18.03
-#      PHP_XDEBUG_REMOTE_LOG: /tmp/php-xdebug.log
     volumes:
       - ./:/var/www/html
-## For macOS users (https://wodby.com/stacks/drupal/docs/local/docker-for-mac/)
-#      - ./:/var/www/html:cached # User-guided caching
-#      - docker-sync:/var/www/html # Docker-sync
-## For XHProf and Xdebug profiler traces
-#      - files:/mnt/files
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
@@ -60,9 +44,6 @@ services:
 #      NGINX_DRUPAL_FILE_PROXY_URL: http://example.com
     volumes:
       - ./:/var/www/html
-# For macOS users (https://wodby.com/stacks/drupal/docs/local/docker-for-mac/)
-#      - ./:/var/www/html:cached # User-guided caching
-#      - docker-sync:/var/www/html # Docker-sync
     labels:
       - 'traefik.backend=${PROJECT_NAME}_nginx'
       - 'traefik.port=80'
@@ -100,9 +81,6 @@ services:
 #      APACHE_DOCUMENT_ROOT: /var/www/html/web
 #    volumes:
 #      - ./:/var/www/html
-## For macOS users (https://wodby.com/stacks/drupal/docs/local/docker-for-mac/)
-##      - ./:/var/www/html:cached # User-guided caching
-##      - docker-sync:/var/www/html # Docker-sync
 #    labels:
 #      - 'traefik.backend=${PROJECT_NAME}_apache'
 #      - 'traefik.port=80'
@@ -283,10 +261,3 @@ services:
 #      - '8080:8080' # Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
-#volumes:
-## Docker-sync for macOS users
-#  docker-sync:
-#    external: true
-## For Xdebug profiler
-#  files:
