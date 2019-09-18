@@ -36,8 +36,6 @@ services:
     depends_on:
       - php
     environment:
-      NGINX_STATIC_OPEN_FILE_CACHE: "off"
-      NGINX_ERROR_LOG_LEVEL: debug
       NGINX_BACKEND_HOST: php
       NGINX_SERVER_ROOT: $WEB_ROOT
       NGINX_VHOST_PRESET: $NGINX_VHOST_PRESET
@@ -74,7 +72,6 @@ services:
 #    depends_on:
 #      - php
 #    environment:
-#      APACHE_LOG_LEVEL: debug
 #      APACHE_BACKEND_HOST: php
 #      APACHE_VHOST_PRESET: php
 #      APACHE_DOCUMENT_ROOT: $WEB_ROOT
