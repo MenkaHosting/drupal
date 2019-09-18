@@ -232,3 +232,11 @@ services:
 #      - '8080:8080' # Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+#TODO ssl in traefik
+#TODO multidomain in traefik
+#TODO add always restart services
+#TODO alter php username un sh
+#TODO add ssh container
+#TODO add cron container
+#TODO add sql backups cron container
