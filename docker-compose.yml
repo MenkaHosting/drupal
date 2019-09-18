@@ -28,7 +28,7 @@ services:
       PHP_FPM_GROUP: wodby
       COLUMNS: 80 # Set 80 columns for docker exec -it.
     volumes:
-      - ./htdocs/:/var/www/html
+      - ./htdocs/:/var/www/html:cached
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
@@ -41,7 +41,7 @@ services:
       NGINX_VHOST_PRESET: $NGINX_VHOST_PRESET
 #      NGINX_DRUPAL_FILE_PROXY_URL: http://example.com
     volumes:
-      - ./htdocs/:/var/www/html
+      - ./htdocs/:/var/www/html:cached
     labels:
       - 'traefik.backend=${PROJECT_NAME}_nginx'
       - 'traefik.port=80'
@@ -76,7 +76,7 @@ services:
 #      APACHE_VHOST_PRESET: php
 #      APACHE_DOCUMENT_ROOT: $WEB_ROOT
 #    volumes:
-#      - ./htdocs/:/var/www/html
+#      - ./htdocs/:/var/www/html:cached
 #    labels:
 #      - 'traefik.backend=${PROJECT_NAME}_apache'
 #      - 'traefik.port=80'
@@ -229,6 +229,7 @@ services:
     command: -c /dev/null --web --docker --logLevel=INFO
     ports:
       - '8000:80'
+#      - "443:443"
 #      - '8080:8080' # Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
