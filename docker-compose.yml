@@ -101,9 +101,9 @@ services:
 #      - 'traefik.port=6081'
 #      - 'traefik.frontend.rule=Host:varnish.${PROJECT_BASE_URL}'
 
-#  redis:
-#    container_name: "${PROJECT_NAME}_redis"
-#    image: wodby/redis:$REDIS_TAG
+  redis:
+    container_name: "${PROJECT_NAME}_redis"
+    image: wodby/redis:$REDIS_TAG
 
 #  adminer:
 #    container_name: "${PROJECT_NAME}_adminer"
@@ -160,9 +160,9 @@ services:
 #    container_name: "${PROJECT_NAME}_memcached"
 #    image: wodby/memcached:$MEMCACHED_TAG
 
-#  rsyslog:
-#    container_name: "${PROJECT_NAME}_rsyslog"
-#    image: wodby/rsyslog:$RSYSLOG_TAG
+  rsyslog:
+    container_name: "${PROJECT_NAME}_rsyslog"
+    image: wodby/rsyslog:$RSYSLOG_TAG
 
 #  athenapdf:
 #    image: arachnysdocker/athenapdf-service:$ATHENAPDF_TAG
@@ -189,25 +189,6 @@ services:
 #      - ./:/var/www/html
 #    command: sh -c 'yarn install && yarn run start'
 
-#  blackfire:
-#    image: blackfire/blackfire
-#    container_name: "${PROJECT_NAME}_blackfire"
-#    environment:
-#      BLACKFIRE_SERVER_ID: XXXXX
-#      BLACKFIRE_SERVER_TOKEN: YYYYY
-
-#  webgrind:
-#    image: wodby/webgrind:$WEBGRIND_TAG
-#    container_name: "${PROJECT_NAME}_webgrind"
-#    environment:
-#      WEBGRIND_PROFILER_DIR: /mnt/files/xdebug/profiler
-#    labels:
-#      - 'traefik.backend=webgrind'
-#      - 'traefik.port=8080'
-#      - 'traefik.frontend.rule=Host:webgrind.${PROJECT_BASE_URL}'
-#    volumes:
-#      - files:/mnt/files
-
 #  elasticsearch:
 #    image: wodby/elasticsearch:$ELASTICSEARCH_TAG
 #    environment:
@@ -233,16 +214,6 @@ services:
 #      RELAY_HOST: $OPENSMTPD_RELAY_HOST
 #      RELAY_USER: $OPENSMTPD_RELAY_USER
 #      RELAY_PASSWORD: $OPENSMTPD_RELAY_PASSWORD
-
-#  xhprof:
-#    image: wodby/xhprof:$XHPROF_TAG
-#    restart: always
-#    volumes:
-#      - files:/mnt/files
-#    labels:
-#      - 'traefik.backend=${PROJECT_NAME}_xhprof'
-#      - 'traefik.port=8080'
-#      - 'traefik.frontend.rule=Host:xhprof.${PROJECT_BASE_URL}'
 
   portainer:
     image: portainer/portainer
