@@ -240,3 +240,4 @@ services:
 #TODO add ssh container
 #TODO add cron container
 #TODO add sql backups cron container
+#TODO add log directory

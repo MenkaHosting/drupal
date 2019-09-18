@@ -1,1 +1,5 @@
 .idea/
+/htdocs
+/mysql
+/backups
+/logs
