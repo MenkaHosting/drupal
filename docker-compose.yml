@@ -10,15 +10,15 @@ services:
       MYSQL_DATABASE: $DB_NAME
       MYSQL_USER: $DB_USER
       MYSQL_PASSWORD: $DB_PASSWORD
-#    volumes:
-#      - /path/to/mariadb/data/on/host:/var/lib/mysql # Use bind mount
+    volumes:
+      - ./mysql/:/var/lib/mysql # Use bind mount
 
   php:
     image: wodby/drupal-php:$PHP_TAG
     container_name: "${PROJECT_NAME}_php"
     environment:
       PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
-#      PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S opensmtpd:25      
+#      PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S opensmtpd:25
       DB_HOST: $DB_HOST
       DB_USER: $DB_USER
       DB_PASSWORD: $DB_PASSWORD
@@ -28,7 +28,7 @@ services:
       PHP_FPM_GROUP: wodby
       COLUMNS: 80 # Set 80 columns for docker exec -it.
     volumes:
-      - ./:/var/www/html
+      - ./htdocs/:/var/www/html
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
@@ -39,11 +39,11 @@ services:
       NGINX_STATIC_OPEN_FILE_CACHE: "off"
       NGINX_ERROR_LOG_LEVEL: debug
       NGINX_BACKEND_HOST: php
-      NGINX_SERVER_ROOT: /var/www/html/web
+      NGINX_SERVER_ROOT: $WEB_ROOT
       NGINX_VHOST_PRESET: $NGINX_VHOST_PRESET
 #      NGINX_DRUPAL_FILE_PROXY_URL: http://example.com
     volumes:
-      - ./:/var/www/html
+      - ./htdocs/:/var/www/html
     labels:
       - 'traefik.backend=${PROJECT_NAME}_nginx'
       - 'traefik.port=80'
@@ -66,8 +66,7 @@ services:
 #      POSTGRES_DB: $DB_NAME
 #      POSTGRES_USER: $DB_USER
 #    volumes:
-#      - ./postgres-init:/docker-entrypoint-initdb.d # Place init file(s) here.
-#      - /path/to/postgres/data/on/host:/var/lib/postgresql/data # Use bind mount
+#      - ./postgres/:/var/lib/postgresql/data # Use bind mount
 
 #  apache:
 #    image: wodby/apache:$APACHE_TAG
@@ -78,9 +77,9 @@ services:
 #      APACHE_LOG_LEVEL: debug
 #      APACHE_BACKEND_HOST: php
 #      APACHE_VHOST_PRESET: php
-#      APACHE_DOCUMENT_ROOT: /var/www/html/web
+#      APACHE_DOCUMENT_ROOT: $WEB_ROOT
 #    volumes:
-#      - ./:/var/www/html
+#      - ./htdocs/:/var/www/html
 #    labels:
 #      - 'traefik.backend=${PROJECT_NAME}_apache'
 #      - 'traefik.port=80'
@@ -111,7 +110,7 @@ services:
 #    image: wodby/adminer:$ADMINER_TAG
 #    environment:
 ## For PostgreSQL:
-##      ADMINER_DEFAULT_DB_DRIVER: pgsql
+#      ADMINER_DEFAULT_DB_DRIVER: pgsql
 #      ADMINER_DEFAULT_DB_HOST: $DB_HOST
 #      ADMINER_DEFAULT_DB_NAME: $DB_NAME
 #    labels:
@@ -230,6 +229,10 @@ services:
 #  opensmtpd:
 #    container_name: "${PROJECT_NAME}_opensmtpd"
 #    image: wodby/opensmtpd:$OPENSMTPD_TAG
+#    environment:
+#      RELAY_HOST: $OPENSMTPD_RELAY_HOST
+#      RELAY_USER: $OPENSMTPD_RELAY_USER
+#      RELAY_PASSWORD: $OPENSMTPD_RELAY_PASSWORD
 
 #  xhprof:
 #    image: wodby/xhprof:$XHPROF_TAG
