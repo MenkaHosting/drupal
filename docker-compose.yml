@@ -13,6 +13,22 @@ services:
     volumes:
       - ./mysql/:/var/lib/mysql # Use bind mount
 
+  cron:
+    image: timonweb/docker-cron-swissknife:non-stable
+    container_name: "${PROJECT_NAME}_cron"
+    depends_on:
+      - mariadb
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker
+      - ./htdocs/:/var/www/html:cached
+      - ./logs/cron/:/var/log
+    environment:
+      - CRON_STRINGS=* * * * * docker ps
+      #TODO el cron ha de ejecutar comandos desde el docker-compose, ya que no tiene drush ni php
+      #TODO mirar como lo hace wodby en prod
+      - CRON_STRINGS=*/5 * * * * root /usr/local/bin/drush -r /var/www/html cron >> /var/log/cron.log 2>&1
+
   php:
     image: wodby/drupal-php:$PHP_TAG
     container_name: "${PROJECT_NAME}_php"
@@ -237,8 +253,9 @@ services:
 #TODO ssl in traefik
 #TODO multidomain in traefik
 #TODO add always restart services
-#TODO alter php username un sh
+
 #TODO add ssh container
 #TODO add cron container
 #TODO add sql backups cron container
 #TODO add log directory
+#TODO add drush alias
