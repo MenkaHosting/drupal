@@ -60,7 +60,7 @@ services:
       PHP_FPM_GROUP: wodby
       COLUMNS: 80 # Set 80 columns for docker exec -it.
     volumes:
-      - app:/var/www/html:cached
+      - app:/var/www/html
       - files:/mnt/files
 
   crond:
@@ -68,7 +68,7 @@ services:
     container_name: "${PROJECT_NAME}_crond"
     command: sudo -E LD_PRELOAD=/usr/lib/preloadable_libiconv.so crond -f -d 0
     volumes:
-      - app:/var/www/html:cached
+      - app:/var/www/html
       - files:/mnt/files
       - crontab:/etc/crontabs/www-data
 
@@ -81,7 +81,7 @@ services:
 #    environment:
 #      SSHD_GATEWAY_PORTS: clientspecified
     volumes:
-      - app:/var/www/html:cached
+      - app:/var/www/html
       - files:/mnt/files
       - authorized_keys:/home/wodby/.ssh/authorized_keys
 
@@ -97,7 +97,7 @@ services:
       NGINX_VHOST_PRESET: $NGINX_VHOST_PRESET
 #      NGINX_DRUPAL_FILE_PROXY_URL: http://example.com
     volumes:
-      - app:/var/www/html:cached
+      - app:/var/www/html
       - files:/mnt/files
     labels:
       - 'traefik.backend=${PROJECT_NAME}_nginx'
@@ -122,7 +122,7 @@ services:
 #      APACHE_VHOST_PRESET: php
 #      APACHE_DOCUMENT_ROOT: $WEB_ROOT
 #    volumes:
-#      - app:/var/www/html:cached
+#      - app:/var/www/html
 #    labels:
 #      - 'traefik.backend=${PROJECT_NAME}_apache'
 #      - 'traefik.port=80'
