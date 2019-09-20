@@ -167,6 +167,7 @@ services:
 
 #  elasticsearch:
 #    image: wodby/elasticsearch:$ELASTICSEARCH_TAG
+#    container_name: "${PROJECT_NAME}_elasticsearch"
 #    environment:
 #      ES_JAVA_OPTS: "-Xms500m -Xmx500m"
 #    ulimits:
@@ -176,6 +177,7 @@ services:
 
 #  kibana:
 #    image: wodby/kibana:$KIBANA_TAG
+#    container_name: "${PROJECT_NAME}_kibana"
 #    depends_on:
 #      - elasticsearch
 #    labels:
