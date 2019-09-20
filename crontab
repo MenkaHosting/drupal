@@ -1,0 +1,3 @@
+#min   hour    day      month   weekday     command
+*/1	    *	    *	    *	    *	        echo "test" > /mnt/files/cron
+*/5     *       *       *       *           root /usr/local/bin/drush -r /var/www/html cron >> /var/log/cron.log 2>&1
