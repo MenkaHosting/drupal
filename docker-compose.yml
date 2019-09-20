@@ -18,30 +18,16 @@ volumes:
   solr:
     path: solr
 
-variables:
-  drupal_hash_salt: 'auto:password:128'
-  drupal_files_sync_salt: 'auto:password:74'
-  db_root_password: 'auto:password:32'
-  db_password: 'auto:password:16'
-  db_host: mariadb
-  db_database: drupal
-  db_user: drupal
-  db_driver: mysql
-  redis_password: 'auto:password:64'
-  varnish_secret: 'auto:password:32'
-  varnish_purge_key: 'auto:password:64'
-  athenapdf_password: 'auto:password:64'
-
 services:
   mariadb:
     image: wodby/mariadb:$MARIADB_TAG
     container_name: "${PROJECT_NAME}_mariadb"
     stop_grace_period: 30s
     environment:
-      MYSQL_ROOT_PASSWORD: {{db_root_password}}
-      MYSQL_DATABASE: {{db_database}}
-      MYSQL_USER: {{db_user}}
-      MYSQL_PASSWORD: {{db_password}}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mariadb:/var/lib/mysql
 
@@ -51,11 +37,11 @@ services:
     environment:
       PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
 #      PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S opensmtpd:25
-      DB_HOST: {{db_host}}
-      DB_USER: {{db_user}}
-      DB_PASSWORD: {{db_password}}
-      DB_NAME: {{db_database}}
-      DB_DRIVER: {{db_driver}}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_DATABASE}
+      DB_DRIVER: ${DB_DRIVER}
       PHP_FPM_USER: wodby
       PHP_FPM_GROUP: wodby
       COLUMNS: 80 # Set 80 columns for docker exec -it.
@@ -134,8 +120,8 @@ services:
 #    depends_on:
 #      - nginx
 #    environment:
-#      VARNISH_SECRET: '{{varnish_secret}}'
-#      VARNISH_PURGE_KEY: '{{varnish_purge_key}}'
+#      VARNISH_SECRET: ${VARNISH_SECRET}
+#      VARNISH_PURGE_KEY: ${VARNISH_PURGE_KEY}
 #      VARNISH_PURGE_EXTERNAL_REQUEST_HEADER: X-Real-IP
 #      VARNISH_BACKEND_HOST: nginx
 #      VARNISH_CONFIG_PRESET: drupal
@@ -149,7 +135,7 @@ services:
     container_name: "${PROJECT_NAME}_redis"
     image: wodby/redis:$REDIS_TAG
     environment:
-      REDIS_PASSWORD: '{{redis_password}}'
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
       - 'redis:/data'
 
@@ -157,7 +143,7 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: "${PROJECT_NAME}_pma"
     environment:
-      PMA_HOST: '{{db_host}}'
+      PMA_HOST: ${DB_HOST}
       PHP_UPLOAD_MAX_FILESIZE: 1G
       PHP_MAX_INPUT_VARS: 1G
     labels:
@@ -190,7 +176,7 @@ services:
     image: arachnysdocker/athenapdf-service:$ATHENAPDF_TAG
     container_name: "${PROJECT_NAME}_athenapdf"
     environment:
-      WEAVER_AUTH_KEY: '{{athenapdf_password}}'
+      WEAVER_AUTH_KEY: ${ATHENAPDF_PASSWORD}
       WEAVER_ATHENA_CMD: "athenapdf -S"
       WEAVER_MAX_WORKERS: 10
       WEAVER_MAX_CONVERSION_QUEUE: 50
