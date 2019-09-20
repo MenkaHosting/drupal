@@ -1,23 +1,5 @@
 version: "3"
 
-volumes:
-  app:
-    path: app
-  files:
-    path: files
-  mariadb:
-    path: mariadb
-  crontab:
-    path: crontab
-  authorized_keys:
-    path: authorized_keys
-  redis:
-    path: redis
-  smtpd:
-    path: smtpd
-  solr:
-    path: solr
-
 services:
   mariadb:
     image: wodby/mariadb:$MARIADB_TAG
@@ -29,7 +11,7 @@ services:
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - mariadb:/var/lib/mysql
+      - ./mariadb:/var/lib/mysql
 
   php:
     image: wodby/drupal-php:$PHP_TAG
@@ -46,17 +28,17 @@ services:
       PHP_FPM_GROUP: wodby
       COLUMNS: 80 # Set 80 columns for docker exec -it.
     volumes:
-      - app:/var/www/html
-      - files:/mnt/files
+      - ./app:/var/www/html
+      - ./files:/mnt/files
 
   crond:
     image: wodby/drupal-php:$PHP_TAG
     container_name: "${PROJECT_NAME}_crond"
     command: sudo -E LD_PRELOAD=/usr/lib/preloadable_libiconv.so crond -f -d 0
     volumes:
-      - app:/var/www/html
-      - files:/mnt/files
-      - crontab:/etc/crontabs/www-data
+      - ./app:/var/www/html
+      - ./files:/mnt/files
+      - ./crontab:/etc/crontabs/www-data
 
   sshd:
     image: wodby/drupal-php:$PHP_TAG
@@ -67,9 +49,9 @@ services:
 #    environment:
 #      SSHD_GATEWAY_PORTS: clientspecified
     volumes:
-      - app:/var/www/html
-      - files:/mnt/files
-      - authorized_keys:/home/wodby/.ssh/authorized_keys
+      - ./app:/var/www/html
+      - ./files:/mnt/files
+      - ./authorized_keys:/home/wodby/.ssh/authorized_keys
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
@@ -83,8 +65,8 @@ services:
       NGINX_VHOST_PRESET: $NGINX_VHOST_PRESET
 #      NGINX_DRUPAL_FILE_PROXY_URL: http://example.com
     volumes:
-      - app:/var/www/html
-      - files:/mnt/files
+      - ./app:/var/www/html
+      - ./files:/mnt/files
     labels:
       - 'traefik.backend=${PROJECT_NAME}_nginx'
       - 'traefik.port=80'
@@ -108,7 +90,7 @@ services:
 #      APACHE_VHOST_PRESET: php
 #      APACHE_DOCUMENT_ROOT: $WEB_ROOT
 #    volumes:
-#      - app:/var/www/html
+#      - ./app:/var/www/html
 #    labels:
 #      - 'traefik.backend=${PROJECT_NAME}_apache'
 #      - 'traefik.port=80'
@@ -137,7 +119,7 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     volumes:
-      - 'redis:/data'
+      - './redis:/data'
 
   pma:
     image: phpmyadmin/phpmyadmin
@@ -158,7 +140,7 @@ services:
 #      SOLR_DEFAULT_CONFIG_SET: $SOLR_CONFIG_SET
 #      SOLR_HEAP: 1024m
 #    volumes:
-#      - 'solr:/opt/solr/server/solr'
+#      - './solr:/opt/solr/server/solr'
 #    labels:
 #      - 'traefik.backend=${PROJECT_NAME}_solr'
 #      - 'traefik.port=8983'
@@ -209,7 +191,7 @@ services:
 #      RELAY_USER: $OPENSMTPD_RELAY_USER
 #      RELAY_PASSWORD: $OPENSMTPD_RELAY_PASSWORD
 #    volumes:
-#      - 'smtpd:/var/spool/smtpd'
+#      - './smtpd:/var/spool/smtpd'
 
   traefik:
     image: traefik:v1.7.16-alpine
