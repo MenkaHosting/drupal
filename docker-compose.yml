@@ -43,21 +43,21 @@ services:
       - ./files:/mnt/files
       - ./crontab:/etc/crontabs/www-data
 
-  sshd:
-    image: wodby/drupal-php:$PHP_TAG
-    container_name: "${PROJECT_NAME}_sshd"
-    restart: always
-    command: sudo /usr/sbin/sshd -De
-    environment:
-      SSHD_GATEWAY_PORTS: clientspecified
-    volumes:
-      - ./app:/var/www/html
-      - ./files:/mnt/files
-      - ./authorized_keys:/home/wodby/.ssh/authorized_keys
-    labels:
-      - 'traefik.backend=${PROJECT_NAME}_sshd'
-      - 'traefik.port=22'
-      - 'traefik.frontend.rule=Host:ssh.${PROJECT_BASE_URL}'
+#  sshd:
+#    image: wodby/drupal-php:$PHP_TAG
+#    container_name: "${PROJECT_NAME}_sshd"
+#    restart: always
+#    command: sudo /usr/sbin/sshd -De
+#    environment:
+#      SSHD_GATEWAY_PORTS: clientspecified
+#    volumes:
+#      - ./app:/var/www/html
+#      - ./files:/mnt/files
+#      - ./authorized_keys:/home/wodby/.ssh/authorized_keys
+#    labels:
+#      - 'traefik.backend=${PROJECT_NAME}_sshd'
+#      - 'traefik.port=22'
+#      - 'traefik.frontend.rule=Host:ssh.${PROJECT_BASE_URL}'
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
