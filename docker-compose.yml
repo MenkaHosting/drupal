@@ -48,8 +48,6 @@ services:
     container_name: "${PROJECT_NAME}_sshd"
     restart: always
     command: sudo /usr/sbin/sshd -De
-#    ports:
-#      - '2222:22'
 #    environment:
 #      SSHD_GATEWAY_PORTS: clientspecified
     volumes:
