@@ -244,6 +244,8 @@ services:
     volumes:
       - /var/log:/var/log
     command: -config.file=/etc/promtail/docker-config.yaml
+    depends_on:
+      - loki
 
   grafana:
     image: grafana/grafana:master
