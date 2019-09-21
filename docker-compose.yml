@@ -271,4 +271,4 @@ services:
     labels:
       - 'traefik.backend=${PROJECT_NAME}_skywalking_ui'
       - 'traefik.port=8080'
-      - 'traefik.frontend.rule=Host:kibana.${PROJECT_BASE_URL}'
+      - 'traefik.frontend.rule=Host:skywalking.${PROJECT_BASE_URL}'
