@@ -219,8 +219,8 @@ services:
     restart: always
     command: -c /dev/null --web --docker --logLevel=INFO
     ports:
-      - '8000:80'
-#      - "443:443"
+      - '80:80'
+      - "443:443"
 #      - '8080:8080' # Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
