@@ -50,8 +50,8 @@ services:
     command: sudo /usr/sbin/sshd -De
     ports:
       - '2222:22'
-#    environment:
-#      SSHD_GATEWAY_PORTS: clientspecified
+    environment:
+      SSHD_GATEWAY_PORTS: clientspecified
     volumes:
       - ./app:/var/www/html
       - ./files:/mnt/files
