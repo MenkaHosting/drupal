@@ -230,6 +230,8 @@ services:
   loki:
     image: grafana/loki:latest
     container_name: "${PROJECT_NAME}_loki"
+    ports:
+      - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     labels:
       - 'traefik.backend=${PROJECT_NAME}_loki'
@@ -246,6 +248,8 @@ services:
   grafana:
     image: grafana/grafana:master
     container_name: "${PROJECT_NAME}_grafana"
+    ports:
+      - "3000:3000"
     labels:
       - 'traefik.backend=${PROJECT_NAME}_grafana'
       - 'traefik.port=3000'
