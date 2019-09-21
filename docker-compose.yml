@@ -48,8 +48,6 @@ services:
     container_name: "${PROJECT_NAME}_sshd"
     restart: always
     command: sudo /usr/sbin/sshd -De
-    ports:
-      - '2222:22'
     environment:
       SSHD_GATEWAY_PORTS: clientspecified
     volumes:
@@ -58,7 +56,7 @@ services:
       - ./authorized_keys:/home/wodby/.ssh/authorized_keys
     labels:
       - 'traefik.backend=${PROJECT_NAME}_sshd'
-      - 'traefik.port=2222'
+      - 'traefik.port=22'
       - 'traefik.frontend.rule=Host:ssh.${PROJECT_BASE_URL}'
 
   nginx:
@@ -222,6 +220,7 @@ services:
     restart: always
     command: -c /dev/null --web --docker --logLevel=INFO
     ports:
+      - '2222:22'
       - '80:80'
       - "443:443"
 #      - '8080:8080' # Dashboard
