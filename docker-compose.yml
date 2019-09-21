@@ -248,26 +248,26 @@ services:
     container_name: "${PROJECT_NAME}_skywalking_oap"
     restart: always
     depends_on:
-      - elasticsearch
+      - skywalking_elasticsearch
     links:
-      - elasticsearch
+      - skywalking_elasticsearch
     ports:
       - 11800:11800
       - 12800:12800
     environment:
-      SW_STORAGE: elasticsearch
-      SW_STORAGE_ES_CLUSTER_NODES: elasticsearch:9200
+      SW_STORAGE: skywalking_elasticsearch
+      SW_STORAGE_ES_CLUSTER_NODES: skywalking_elasticsearch:9200
 
   skywalking_ui:
     image: apache/skywalking-ui:6.4.0
     container_name: "${PROJECT_NAME}_skywalking_ui"
     restart: always
     depends_on:
-      - oap
+      - skywalking_oap
     links:
-      - oap
+      - skywalking_oap
     environment:
-      SW_OAP_ADDRESS: oap:12800
+      SW_OAP_ADDRESS: skywalking_oap:12800
     labels:
       - 'traefik.backend=${PROJECT_NAME}_skywalking_ui'
       - 'traefik.port=8080'
