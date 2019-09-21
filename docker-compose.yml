@@ -200,7 +200,7 @@ services:
 #    labels:
 #      - 'traefik.backend=${PROJECT_NAME}_kibana'
 #      - 'traefik.port=5601'
-#      - 'traefik.frontend.rule=Host:kibana.php.docker.localhost'
+#      - 'traefik.frontend.rule=Host:kibana.${PROJECT_BASE_URL}'
 
 #  opensmtpd:
 #    container_name: "${PROJECT_NAME}_opensmtpd"
@@ -224,3 +224,51 @@ services:
 #      - '8080:8080' # Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+
+
+  skywalking_elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.1
+    container_name: "${PROJECT_NAME}_skywalking_elasticsearch"
+    restart: always
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  skywalking_oap:
+    image: apache/skywalking-oap-server:6.4.0
+    container_name: "${PROJECT_NAME}_skywalking_oap"
+    restart: always
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+    ports:
+      - 11800:11800
+      - 12800:12800
+    environment:
+      SW_STORAGE: elasticsearch
+      SW_STORAGE_ES_CLUSTER_NODES: elasticsearch:9200
+
+  skywalking_ui:
+    image: apache/skywalking-ui:6.4.0
+    container_name: "${PROJECT_NAME}_skywalking_ui"
+    restart: always
+    depends_on:
+      - oap
+    links:
+      - oap
+    environment:
+      SW_OAP_ADDRESS: oap:12800
+    labels:
+      - 'traefik.backend=${PROJECT_NAME}_skywalking_ui'
+      - 'traefik.port=8080'
+      - 'traefik.frontend.rule=Host:kibana.${PROJECT_BASE_URL}'
