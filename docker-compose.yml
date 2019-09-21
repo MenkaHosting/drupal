@@ -5,6 +5,7 @@ services:
     image: wodby/mariadb:$MARIADB_TAG
     container_name: "${PROJECT_NAME}_mariadb"
     stop_grace_period: 30s
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
@@ -16,6 +17,7 @@ services:
   php:
     image: wodby/drupal-php:$PHP_TAG
     container_name: "${PROJECT_NAME}_php"
+    restart: always
     environment:
       PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S mailhog:1025
 #      PHP_SENDMAIL_PATH: /usr/sbin/sendmail -t -i -S opensmtpd:25
@@ -34,6 +36,7 @@ services:
   crond:
     image: wodby/drupal-php:$PHP_TAG
     container_name: "${PROJECT_NAME}_crond"
+    restart: always
     command: sudo -E LD_PRELOAD=/usr/lib/preloadable_libiconv.so crond -f -d 0
     volumes:
       - ./app:/var/www/html
@@ -44,6 +47,7 @@ services:
   sshd:
     image: wodby/drupal-php:$PHP_TAG
     container_name: "${PROJECT_NAME}_sshd"
+    restart: always
     command: sudo /usr/sbin/sshd -De
 #    ports:
 #      - '2222:22'
@@ -57,6 +61,7 @@ services:
   nginx:
     image: wodby/nginx:$NGINX_TAG
     container_name: "${PROJECT_NAME}_nginx"
+    restart: always
     depends_on:
       - php
     environment:
@@ -76,6 +81,7 @@ services:
   mailhog:
     image: mailhog/mailhog
     container_name: "${PROJECT_NAME}_mailhog"
+    restart: always
     labels:
       - 'traefik.backend=${PROJECT_NAME}_mailhog'
       - 'traefik.port=8025'
@@ -84,6 +90,7 @@ services:
 #  apache:
 #    image: wodby/apache:$APACHE_TAG
 #    container_name: "${PROJECT_NAME}_apache"
+#    restart: always
 #    depends_on:
 #      - php
 #    environment:
@@ -100,6 +107,7 @@ services:
 #  varnish:
 #    image: wodby/varnish:$VARNISH_TAG
 #    container_name: "${PROJECT_NAME}_varnish"
+#    restart: always
 #    depends_on:
 #      - nginx
 #    environment:
@@ -116,6 +124,7 @@ services:
 
   redis:
     container_name: "${PROJECT_NAME}_redis"
+    restart: always
     image: wodby/redis:$REDIS_TAG
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
@@ -125,6 +134,7 @@ services:
   pma:
     image: phpmyadmin/phpmyadmin
     container_name: "${PROJECT_NAME}_pma"
+    restart: always
     environment:
       PMA_HOST: ${DB_HOST}
       PHP_UPLOAD_MAX_FILESIZE: 1G
@@ -137,6 +147,7 @@ services:
 #  solr:
 #    image: wodby/solr:$SOLR_TAG
 #    container_name: "${PROJECT_NAME}_solr"
+#    restart: always
 #    environment:
 #      SOLR_DEFAULT_CONFIG_SET: $SOLR_CONFIG_SET
 #      SOLR_HEAP: 1024m
@@ -149,15 +160,18 @@ services:
 
 #  memcached:
 #    container_name: "${PROJECT_NAME}_memcached"
+#    restart: always
 #    image: wodby/memcached:$MEMCACHED_TAG
 
   rsyslog:
     image: wodby/rsyslog:$RSYSLOG_TAG
     container_name: "${PROJECT_NAME}_rsyslog"
+    restart: always
 
   athenapdf:
     image: arachnysdocker/athenapdf-service:$ATHENAPDF_TAG
     container_name: "${PROJECT_NAME}_athenapdf"
+    restart: always
     environment:
       WEAVER_AUTH_KEY: ${ATHENAPDF_PASSWORD}
       WEAVER_ATHENA_CMD: "athenapdf -S"
@@ -169,6 +183,7 @@ services:
 #  elasticsearch:
 #    image: wodby/elasticsearch:$ELASTICSEARCH_TAG
 #    container_name: "${PROJECT_NAME}_elasticsearch"
+#    restart: always
 #    environment:
 #      ES_JAVA_OPTS: "-Xms500m -Xmx500m"
 #    ulimits:
@@ -179,6 +194,7 @@ services:
 #  kibana:
 #    image: wodby/kibana:$KIBANA_TAG
 #    container_name: "${PROJECT_NAME}_kibana"
+#    restart: always
 #    depends_on:
 #      - elasticsearch
 #    labels:
@@ -188,6 +204,7 @@ services:
 
 #  opensmtpd:
 #    container_name: "${PROJECT_NAME}_opensmtpd"
+#    restart: always
 #    image: wodby/opensmtpd:$OPENSMTPD_TAG
 #    environment:
 #      RELAY_HOST: $OPENSMTPD_RELAY_HOST
@@ -199,6 +216,7 @@ services:
   traefik:
     image: traefik:v1.7.16-alpine
     container_name: "${PROJECT_NAME}_traefik"
+    restart: always
     command: -c /dev/null --web --docker --logLevel=INFO
     ports:
       - '8000:80'
