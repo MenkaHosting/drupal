@@ -48,6 +48,8 @@ services:
     container_name: "${PROJECT_NAME}_sshd"
     restart: always
     command: sudo /usr/sbin/sshd -De
+    ports:
+      - '22:22'
     environment:
       SSHD_GATEWAY_PORTS: clientspecified
     volumes:
@@ -220,7 +222,7 @@ services:
     restart: always
     command: -c /dev/null --web --docker --logLevel=INFO
     ports:
-      - '2222:22'
+      - '31222:22'
       - '80:80'
       - "443:443"
 #      - '8080:8080' # Dashboard
