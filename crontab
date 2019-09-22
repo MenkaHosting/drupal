@@ -1,4 +1,4 @@
 #!/bin/sh
 
 #min   hour    day      month   weekday     user    command
-*/5     *       *       *       *           wodby   /usr/local/bin/drush -r /var/www/html cron --quiet
+*/5     *       *       *       *           wodby   /usr/local/bin/drush -r /var/www/html --quiet cron
