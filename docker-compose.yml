@@ -41,7 +41,7 @@ services:
     volumes:
       - ./app:/var/www/html
       - ./files:/mnt/files
-      - ./crontab:/etc/crontabs/wodby
+      - ./crontab:/etc/crontabs/www-data
 
   sshd:
     image: wodby/drupal-php:$PHP_TAG
