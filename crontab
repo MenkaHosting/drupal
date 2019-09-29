@@ -1,4 +1,4 @@
 #!/bin/sh
 
 #min  hour    day     month   weekday   command
-*     *       *       *       *         /usr/local/bin/drush -r /var/www/html --quiet cron
+*/5     *       *       *       *         /usr/local/bin/drush -r /var/www/html --quiet cron
