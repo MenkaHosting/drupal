@@ -48,8 +48,6 @@ services:
     container_name: "${PROJECT_NAME}_sshd"
     restart: always
     command: sudo /usr/sbin/sshd -De
-    ports:
-      - '22:22'
     environment:
       SSHD_GATEWAY_PORTS: clientspecified
     volumes:
@@ -57,9 +55,10 @@ services:
       - ./files:/mnt/files
       - ./authorized_keys:/home/wodby/.ssh/authorized_keys
     labels:
-      - 'traefik.backend=${PROJECT_NAME}_sshd'
-      - 'traefik.port=22'
-      - 'traefik.frontend.rule=Host:ssh.${PROJECT_BASE_URL}'
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.sshd.entrypoints=ssh"
+      - "traefik.tcp.routers.sshd.rule=HostSNI(`*`)"
+      - "traefik.tcp.services.sshd.loadbalancer.server.port=22"
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
@@ -77,53 +76,19 @@ services:
       - ./app:/var/www/html
       - ./files:/mnt/files
     labels:
-      - 'traefik.backend=${PROJECT_NAME}_nginx'
-      - 'traefik.port=80'
-      - 'traefik.frontend.rule=Host:${PROJECT_BASE_URL}'
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx.entrypoints=web"
+      - "traefik.http.routers.nginx.rule=Host(`${PROJECT_BASE_URL}`)"
 
   mailhog:
     image: mailhog/mailhog
     container_name: "${PROJECT_NAME}_mailhog"
     restart: always
     labels:
-      - 'traefik.backend=${PROJECT_NAME}_mailhog'
-      - 'traefik.port=8025'
-      - 'traefik.frontend.rule=Host:mailhog.${PROJECT_BASE_URL}'
-
-#  apache:
-#    image: wodby/apache:$APACHE_TAG
-#    container_name: "${PROJECT_NAME}_apache"
-#    restart: always
-#    depends_on:
-#      - php
-#    environment:
-#      APACHE_BACKEND_HOST: php
-#      APACHE_VHOST_PRESET: php
-#      APACHE_DOCUMENT_ROOT: $WEB_ROOT
-#    volumes:
-#      - ./app:/var/www/html
-#    labels:
-#      - 'traefik.backend=${PROJECT_NAME}_apache'
-#      - 'traefik.port=80'
-#      - 'traefik.frontend.rule=Host:${PROJECT_BASE_URL}'
-
-#  varnish:
-#    image: wodby/varnish:$VARNISH_TAG
-#    container_name: "${PROJECT_NAME}_varnish"
-#    restart: always
-#    depends_on:
-#      - nginx
-#    environment:
-#      VARNISH_SECRET: ${VARNISH_SECRET}
-#      VARNISH_PURGE_KEY: ${VARNISH_PURGE_KEY}
-#      VARNISH_PURGE_EXTERNAL_REQUEST_HEADER: X-Real-IP
-#      VARNISH_BACKEND_HOST: nginx
-#      VARNISH_CONFIG_PRESET: drupal
-#      VARNISHD_PARAM_HTTP_RESP_HDR_LEN: 16k
-#    labels:
-#      - 'traefik.backend=${PROJECT_NAME}_varnish'
-#      - 'traefik.port=6081'
-#      - 'traefik.frontend.rule=Host:varnish.${PROJECT_BASE_URL}'
+      - "traefik.enable=true"
+      - "traefik.http.routers.mailhog.entrypoints=web"
+      - "traefik.http.routers.mailhog.rule=Host(`mailhog.${PROJECT_BASE_URL}`)"
+      - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
 
   redis:
     container_name: "${PROJECT_NAME}_redis"
@@ -143,28 +108,9 @@ services:
       PHP_UPLOAD_MAX_FILESIZE: 1G
       PHP_MAX_INPUT_VARS: 1G
     labels:
-      - 'traefik.backend=${PROJECT_NAME}_pma'
-      - 'traefik.port=80'
-      - 'traefik.frontend.rule=Host:pma.${PROJECT_BASE_URL}'
-
-#  solr:
-#    image: wodby/solr:$SOLR_TAG
-#    container_name: "${PROJECT_NAME}_solr"
-#    restart: always
-#    environment:
-#      SOLR_DEFAULT_CONFIG_SET: $SOLR_CONFIG_SET
-#      SOLR_HEAP: 1024m
-#    volumes:
-#      - './solr:/opt/solr/server/solr'
-#    labels:
-#      - 'traefik.backend=${PROJECT_NAME}_solr'
-#      - 'traefik.port=8983'
-#      - 'traefik.frontend.rule=Host:solr.${PROJECT_BASE_URL}'
-
-#  memcached:
-#    container_name: "${PROJECT_NAME}_memcached"
-#    restart: always
-#    image: wodby/memcached:$MEMCACHED_TAG
+      - "traefik.enable=true"
+      - "traefik.http.routers.pma.entrypoints=web"
+      - "traefik.http.routers.pma.rule=Host(`pma.${PROJECT_BASE_URL}`)"
 
   rsyslog:
     image: wodby/rsyslog:$RSYSLOG_TAG
@@ -201,7 +147,6 @@ services:
 #    depends_on:
 #      - elasticsearch
 #    labels:
-#      - 'traefik.backend=${PROJECT_NAME}_kibana'
 #      - 'traefik.port=5601'
 #      - 'traefik.frontend.rule=Host:kibana.${PROJECT_BASE_URL}'
 
@@ -217,17 +162,23 @@ services:
 #      - './smtpd:/var/spool/smtpd'
 
   traefik:
-    image: traefik:v1.7.16-alpine
+    image: traefik:v2.0
     container_name: "${PROJECT_NAME}_traefik"
     restart: always
-    command: -c /dev/null --web --docker --logLevel=INFO
+    command:
+      #- "--log.level=DEBUG"
+      #- "--api.insecure=true" # Traefik will listen on port 8080 by default for API request.
+      - "--providers.docker=true" # Enabling docker provider
+      - "--providers.docker.exposedbydefault=false" # Do not expose containers unless explicitly told so
+      - "--entrypoints.web.address=:80" # Traefik will listen to incoming request on the port 80 (HTTP)
+      - "--entrypoints.ssh.address=:22"
     ports:
-      - '31222:22'
-      - '80:80'
+      - "80:80"
       - "443:443"
-#      - '8080:8080' # Dashboard
+      - "2222:22"
+      #- "8080:8080" # Dashboard
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   portainer:
     image: portainer/portainer
@@ -236,6 +187,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
-      - 'traefik.backend=${PROJECT_NAME}_portainer'
-      - 'traefik.port=9000'
-      - 'traefik.frontend.rule=Host:portainer.${PROJECT_BASE_URL}'
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.entrypoints=web"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${PROJECT_BASE_URL}`)"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
