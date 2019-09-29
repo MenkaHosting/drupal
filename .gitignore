@@ -1,5 +1,5 @@
 .idea/
-/htdocs
-/mysql
+/app
+/mariadb
 /backups
 /logs
