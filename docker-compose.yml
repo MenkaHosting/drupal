@@ -56,9 +56,9 @@ services:
       - ./authorized_keys:/home/wodby/.ssh/authorized_keys
     labels:
       - "traefik.enable=true"
-      - "traefik.tcp.routers.sshd.entrypoints=ssh"
-      - "traefik.tcp.routers.sshd.rule=HostSNI(`*`)"
-      - "traefik.tcp.services.sshd.loadbalancer.server.port=22"
+      - "traefik.tcp.routers.${PROJECT_NAME}_sshd.entrypoints=ssh"
+      - "traefik.tcp.routers.${PROJECT_NAME}_sshd.rule=HostSNI(`*`)"
+      - "traefik.tcp.services.${PROJECT_NAME}_sshd.loadbalancer.server.port=22"
 
   nginx:
     image: wodby/nginx:$NGINX_TAG
@@ -77,8 +77,8 @@ services:
       - ./files:/mnt/files
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nginx.entrypoints=web"
-      - "traefik.http.routers.nginx.rule=Host(`${PROJECT_BASE_URL}`)"
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.entrypoints=web"
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.rule=Host(`${PROJECT_BASE_URL}`)"
 
   mailhog:
     image: mailhog/mailhog
@@ -86,9 +86,9 @@ services:
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.mailhog.entrypoints=web"
-      - "traefik.http.routers.mailhog.rule=Host(`mailhog.${PROJECT_BASE_URL}`)"
-      - "traefik.http.services.mailhog.loadbalancer.server.port=8025"
+      - "traefik.http.routers.${PROJECT_NAME}_mailhog.entrypoints=web"
+      - "traefik.http.services.${PROJECT_NAME}_mailhog.loadbalancer.server.port=8025"
+      - "traefik.http.routers.${PROJECT_NAME}_mailhog.rule=Host(`mailhog.${PROJECT_BASE_URL}`)"
 
   redis:
     container_name: "${PROJECT_NAME}_redis"
@@ -109,8 +109,8 @@ services:
       PHP_MAX_INPUT_VARS: 1G
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.pma.entrypoints=web"
-      - "traefik.http.routers.pma.rule=Host(`pma.${PROJECT_BASE_URL}`)"
+      - "traefik.http.routers.${PROJECT_NAME}_pma.entrypoints=web"
+      - "traefik.http.routers.${PROJECT_NAME}_pma.rule=Host(`pma.${PROJECT_BASE_URL}`)"
 
   rsyslog:
     image: wodby/rsyslog:$RSYSLOG_TAG
@@ -188,6 +188,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.entrypoints=web"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.${PROJECT_BASE_URL}`)"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.routers.${PROJECT_NAME}_portainer.entrypoints=web"
+      - "traefik.http.routers.${PROJECT_NAME}_portainer.rule=Host(`portainer.${PROJECT_BASE_URL}`)"
+      - "traefik.http.services.${PROJECT_NAME}_portainer.loadbalancer.server.port=9000"
