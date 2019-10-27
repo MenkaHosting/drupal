@@ -77,8 +77,17 @@ services:
       - ./files:/mnt/files
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT_NAME}_nginx.entrypoints=web"
       - "traefik.http.routers.${PROJECT_NAME}_nginx.rule=Host(`${PROJECT_BASE_URL}`)"
+#      - "traefik.http.routers.${PROJECT_NAME}_nginx.entrypoints=web"
+      # enable https
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.tls.certresolver=le"
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.entrypoints=websecure"
+      # global redirect to https
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      # middleware redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
   mailhog:
     image: mailhog/mailhog
@@ -171,7 +180,11 @@ services:
       - "--providers.docker=true" # Enabling docker provider
       - "--providers.docker.exposedbydefault=false" # Do not expose containers unless explicitly told so
       - "--entrypoints.web.address=:80" # Traefik will listen to incoming request on the port 80 (HTTP)
-      - "--entrypoints.ssh.address=:22"
+      - "--entrypoints.ssh.address=:22" # Traefik will listen to incoming request on the port 22 (SSH)
+      - "--entrypoints.websecure.address=:443" # Traefik will listen to incoming request on the port 443 (HTTP)
+      - "--certificatesresolvers.le.acme.email=my@email.com"
+      - "--certificatesresolvers .le.acme.storage =/acme/acme.json"
+      - "--certificatesresolvers.le.acme.tlschallenge=true"
     ports:
       - "80:80"
       - "443:443"
@@ -179,6 +192,7 @@ services:
       #- "8080:8080" # Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme:/acme
 
   portainer:
     image: portainer/portainer
