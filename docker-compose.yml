@@ -80,7 +80,7 @@ services:
       - "traefik.http.routers.${PROJECT_NAME}_nginx.rule=Host(`${PROJECT_BASE_URL}`)"
 #      - "traefik.http.routers.${PROJECT_NAME}_nginx.entrypoints=web"
       # enable https
-      - "traefik.http.routers.${PROJECT_NAME}_nginx.tls.certresolver=le"
+      - "traefik.http.routers.${PROJECT_NAME}_nginx.tls.certresolver=leresolver"
       - "traefik.http.routers.${PROJECT_NAME}_nginx.entrypoints=websecure"
       # global redirect to https
       - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
@@ -171,20 +171,20 @@ services:
 #      - './smtpd:/var/spool/smtpd'
 
   traefik:
-    image: traefik:v2.0
+    image: traefik:v2.0.0
     container_name: "${PROJECT_NAME}_traefik"
     restart: always
     command:
       #- "--log.level=DEBUG"
       #- "--api.insecure=true" # Traefik will listen on port 8080 by default for API request.
       - "--providers.docker=true" # Enabling docker provider
-      - "--providers.docker.exposedbydefault=false" # Do not expose containers unless explicitly told so
+      #- "--providers.docker.exposedbydefault=false" # Do not expose containers unless explicitly told so
       - "--entrypoints.web.address=:80" # Traefik will listen to incoming request on the port 80 (HTTP)
       - "--entrypoints.ssh.address=:22" # Traefik will listen to incoming request on the port 22 (SSH)
       - "--entrypoints.websecure.address=:443" # Traefik will listen to incoming request on the port 443 (HTTP)
-      - "--certificatesresolvers.le.acme.email=my@email.com"
-      - "--certificatesresolvers .le.acme.storage =/acme/acme.json"
-      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      - "--certificatesresolvers.leresolver.acme.email=robertmenetray@gmail.com"
+      - "--certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.leresolver.acme.tlschallenge=true"
     ports:
       - "80:80"
       - "443:443"
@@ -192,7 +192,7 @@ services:
       #- "8080:8080" # Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./acme:/acme
+      - ./letsencrypt:/letsencrypt
 
   portainer:
     image: portainer/portainer
